@@ -2,8 +2,8 @@
 Simple Caesar cipher decoder written in C.
 
 ```
-[linux@linux]$ rosar -se 3 "example" 
-"example" -> "hadpsoh" 
+[linux@linux]$ ./rosar -s "example" -e 4 
+"example" -> "ibeqtpi" 
 ```
 
 ```

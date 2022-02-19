@@ -45,29 +45,32 @@ int main(int argc, char **argv) {
 
     FILE *fp;
     int opt, file=0, flag_action=0;
-    int _F_FLAG=0, _S_FLAG=0, _D_FLAG=0, _E_FLAG=0;
+    int _D_FLAG=-1, _E_FLAG=-1;
+    char* FLAG_VALUE, *INPUT_VALUE;
 
     if((argc - optind) < 1) exit(1);
 
-    while((opt = getopt(argc, argv, "fsdeh")) != -1) {
+    while((opt = getopt(argc, argv, "f:s:d:e:h")) != -1) {
         switch(opt) {
             case 'f':
-                _F_FLAG=1;
+                INPUT_VALUE=optarg;
                 file=_FILE;
                 break;
 
             case 's':
-                _S_FLAG=1;
+                INPUT_VALUE=optarg;
                 file=_NO_FILE;
                 break;
 
             case 'd':
-                _D_FLAG=1;
+                _D_FLAG=(int)strtol(optarg, NULL, 0);
+                FLAG_VALUE=optarg;
                 flag_action=DECRYPT;
                 break;
 
             case 'e':
-                _E_FLAG=1;
+                _E_FLAG=(int)strtol(optarg, NULL, 0);
+                FLAG_VALUE=optarg;
                 flag_action=ENCRYPT;
                 break;
 
@@ -83,12 +86,15 @@ int main(int argc, char **argv) {
         }
     }
 
-    if(_S_FLAG != 1 && _F_FLAG != 1) errx(1, "no input provided");
-    if(_E_FLAG != 1 && _D_FLAG != 1) errx(1, "no operation provided");
+    if(INPUT_VALUE == NULL) errx(1, "no input provided");
+
+    if(_E_FLAG != -1 && _D_FLAG != -1) errx(1,"no instruction provided");
+
+    if(FLAG_VALUE == NULL) errx(1, "shift value is not provided.");
 
     if(file) {
 
-        fp=fopen(argv[optind+1], "r");
+        fp=fopen(INPUT_VALUE, "r");
         if(!fp) errx(1,"error opening a file");
         
         fseek(fp, 0L, SEEK_END);
@@ -98,15 +104,14 @@ int main(int argc, char **argv) {
         char* buf = malloc(fsz);
         fread(buf, 1, fsz, fp);
 
-        if(flag_action == ENCRYPT || flag_action == DECRYPT ) shift(buf, atoi(argv[optind]), flag_action);
+        if(flag_action == ENCRYPT || flag_action == DECRYPT ) shift(buf, atoi(FLAG_VALUE), flag_action);
             
         free(buf);
     }
 
-    else if(argv[optind] == NULL || argv[optind+1] == NULL) errx(1, "shift value is not provided.");
 
-    if(!file)
-        if(flag_action == ENCRYPT || flag_action == DECRYPT ) shift(argv[optind+1], atoi(argv[optind]), flag_action);
+    else if(!file)
+        if(flag_action == ENCRYPT || flag_action == DECRYPT ) shift(INPUT_VALUE, atoi(FLAG_VALUE), flag_action);
 
     printf("\n");
 }
