@@ -1,5 +1,5 @@
 # Caesar Cipher Decoder
-Simple Caesar cipher decoder writte in C.
+Simple Caesar cipher decoder written in C.
 
 ```
 [linux@linux]$ rosar -se 3 "example" 
