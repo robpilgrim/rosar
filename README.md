@@ -7,7 +7,7 @@ Simple Caesar cipher decoder written in C.
 ```
 
 ```
--s - read from standard input
+-s - read from a string
 -f - read from a file
 -e - encrypt
 -d - decrypt
