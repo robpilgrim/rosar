@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <err.h>
 #include <string.h>
 #include <ctype.h>
@@ -46,24 +45,29 @@ int main(int argc, char **argv) {
 
     FILE *fp;
     int opt, file=0, flag_action=0;
+    int _F_FLAG=0, _S_FLAG=0, _D_FLAG=0, _E_FLAG=0;
 
-    if((argc - optind) < 1) puts(strerror(errno));
+    if((argc - optind) < 1) exit(1);
 
     while((opt = getopt(argc, argv, "fsdeh")) != -1) {
         switch(opt) {
             case 'f':
+                _F_FLAG=1;
                 file=_FILE;
                 break;
 
             case 's':
+                _S_FLAG=1;
                 file=_NO_FILE;
                 break;
 
             case 'd':
+                _D_FLAG=1;
                 flag_action=DECRYPT;
                 break;
 
             case 'e':
+                _E_FLAG=1;
                 flag_action=ENCRYPT;
                 break;
 
@@ -79,10 +83,13 @@ int main(int argc, char **argv) {
         }
     }
 
+    if(_S_FLAG != 1 && _F_FLAG != 1) errx(1, "no input provided");
+    if(_E_FLAG != 1 && _D_FLAG != 1) errx(1, "no operation provided");
+
     if(file) {
 
         fp=fopen(argv[optind+1], "r");
-        if(!fp) puts(strerror(errno));
+        if(!fp) errx(1,"error opening a file");
         
         fseek(fp, 0L, SEEK_END);
         size_t fsz = ftell(fp)-1;
